@@ -25,13 +25,11 @@ class WidgetPageStackNavigator extends StatefulWidget {
   });
 
   @override
-  WidgetPageStackNavigatorState createState() =>
-      WidgetPageStackNavigatorState();
+  WidgetPageStackNavigatorState createState() => WidgetPageStackNavigatorState();
 
   /// Retrieves the nearest [WidgetPageStackNavigatorState] ancestor.
   static WidgetPageStackNavigatorState of(BuildContext context) {
-    final state =
-        context.findAncestorStateOfType<WidgetPageStackNavigatorState>();
+    final state = context.findAncestorStateOfType<WidgetPageStackNavigatorState>();
     assert(state != null, "Couldn't find a StackNavigatorState");
     return state!;
   }
@@ -185,16 +183,14 @@ class _WidgetStackNavigatorState extends State<_WidgetStackNavigator> {
     for (var i = 0; i < maxIndex; i++) {
       final newRoute = newRoutes.routeElementAtOrNull(i);
       final oldRoute = oldRoutes.routeElementAtOrNull(i);
-      final previousRoute = oldRoutes.routeElementAtOrNull(i - 1);
+      final previousRoute = i > 0 ? oldRoutes.elementAtOrNull(i - 1) : null;
 
       if (oldRoute == null && newRoute != null) {
         // Page was pushed
         widget.observer.didPush(newRoute, previousRoute);
       }
 
-      if (oldRoute != null &&
-          newRoute != null &&
-          oldRoute.routeData != newRoute.routeData) {
+      if (oldRoute != null && newRoute != null && oldRoute.routeData != newRoute.routeData) {
         // Page was replaced
         widget.observer.didReplace(newRoute: newRoute, oldRoute: oldRoute);
       }
@@ -270,8 +266,7 @@ class WidgetRoute<T> extends Route<T> {
   );
 }
 
-typedef ChildrenBuilder = Widget Function(
-    BuildContext context, List<WidgetRoute> pages);
+typedef ChildrenBuilder = Widget Function(BuildContext context, List<WidgetRoute> pages);
 
 mixin RouteDataPage<T> on Page<T> {
   RouteData? _routeData;
