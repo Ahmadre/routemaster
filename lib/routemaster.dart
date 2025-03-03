@@ -3,6 +3,7 @@ library routemaster;
 export 'src/parser.dart';
 export 'src/pages/guard.dart';
 export 'src/pages/transition_page.dart';
+export 'src/pages/stack_contents.dart';
 
 import 'dart:async';
 import 'dart:math';
@@ -154,8 +155,7 @@ class Routemaster {
 
   /// Retrieves the nearest ancestor [Routemaster] object.
   static Routemaster of(BuildContext context) {
-    final widget =
-        context.dependOnInheritedWidgetOfExactType<_RoutemasterWidget>();
+    final widget = context.dependOnInheritedWidgetOfExactType<_RoutemasterWidget>();
 
     assert(
       widget != null,
@@ -286,8 +286,7 @@ class NavigationResult<T extends Object?> {
 }
 
 /// A delegate that is used by the [Router] widget to manage navigation.
-class RoutemasterDelegate extends RouterDelegate<RouteData>
-    with ChangeNotifier {
+class RoutemasterDelegate extends RouterDelegate<RouteData> with ChangeNotifier {
   /// Specifies how the top-level [Navigator] transitions between routes.
   ///
   /// If this isn't provided, a [DefaultTransitionDelegate] is used.
@@ -523,8 +522,7 @@ class RoutemasterDelegate extends RouterDelegate<RouteData>
               : PageStackNavigator(
                   navigatorKey: navigatorKey,
                   stack: _state.stack,
-                  transitionDelegate: transitionDelegate ??
-                      const DefaultTransitionDelegate<dynamic>(),
+                  transitionDelegate: transitionDelegate ?? const DefaultTransitionDelegate<dynamic>(),
                 ),
         );
       },
@@ -610,10 +608,9 @@ class RoutemasterDelegate extends RouterDelegate<RouteData>
         } else {
           // If the public paths match but the private paths don't, we need to
           // ensure a new history item is created
-          final needsForceNavigate =
-              routeData.publicPath == currentRouteData.publicPath &&
-                  routeData.fullPath != currentRouteData.fullPath &&
-                  requestSource != RequestSource.system;
+          final needsForceNavigate = routeData.publicPath == currentRouteData.publicPath &&
+              routeData.fullPath != currentRouteData.fullPath &&
+              requestSource != RequestSource.system;
 
           if (needsForceNavigate && _reported != _ReportType.neglect) {
             _setHasReported(_ReportType.navigate);
@@ -722,8 +719,7 @@ class RoutemasterDelegate extends RouterDelegate<RouteData>
     late List<PageContainer> pages;
     var result = _createAllPages(
       routeMap: _state.routeMap!,
-      currentRoutes:
-          useCurrentState ? _state.stack._getCurrentPages().toList() : null,
+      currentRoutes: useCurrentState ? _state.stack._getCurrentPages().toList() : null,
       request: request,
     );
 
@@ -774,8 +770,7 @@ class RoutemasterDelegate extends RouterDelegate<RouteData>
 
     _state.stack._pageContainers = pages;
 
-    final pathIsSame =
-        _state.currentConfiguration!.fullPath == pages.last.routeData.fullPath;
+    final pathIsSame = _state.currentConfiguration!.fullPath == pages.last.routeData.fullPath;
 
     _updateCurrentConfiguration(
       isReplacement: pathIsSame || isReplacement,
@@ -834,8 +829,7 @@ class RoutemasterDelegate extends RouterDelegate<RouteData>
         requestSource: request.requestSource,
       );
 
-      if (routeData._privateSegmentIndex != null &&
-          request.requestSource == RequestSource.system) {
+      if (routeData._privateSegmentIndex != null && request.requestSource == RequestSource.system) {
         // Route contains private URL, deny loading from system request
         return _PagesNotFoundResult(request.uri.toString());
       }
@@ -893,9 +887,7 @@ class RoutemasterDelegate extends RouterDelegate<RouteData>
           page._result = request.result;
         }
 
-        if (result.isNotEmpty &&
-            page is MultiChildPageContainer &&
-            page.maybeSetChildPages(result)) {
+        if (result.isNotEmpty && page is MultiChildPageContainer && page.maybeSetChildPages(result)) {
           result = [page];
         } else {
           result.insert(0, page);
@@ -1075,13 +1067,10 @@ class RoutemasterDelegate extends RouterDelegate<RouteData>
     );
   }
 
-  static String _fillRedirectPathParams(
-      String redirectPath, RouteData routeData) {
+  static String _fillRedirectPathParams(String redirectPath, RouteData routeData) {
     final pathSegments = pathContext.split(redirectPath);
     final mappedSegments = pathSegments.map(
-      (segment) => segment.startsWith(':')
-          ? routeData.pathParameters[segment.substring(1)] ?? segment
-          : segment,
+      (segment) => segment.startsWith(':') ? routeData.pathParameters[segment.substring(1)] ?? segment : segment,
     );
     return pathContext.joinAll(mappedSegments);
   }
@@ -1151,9 +1140,7 @@ class RoutemasterDelegate extends RouterDelegate<RouteData>
 
   void _didPush(Route route) {
     final page = route.settings;
-    final current = _state.stack
-        ._getCurrentPages()
-        .firstWhereOrNull((e) => e._getOrCreatePage() == page);
+    final current = _state.stack._getCurrentPages().firstWhereOrNull((e) => e._getOrCreatePage() == page);
 
     final completer = current?._result?._routeCompleter;
     if (completer != null && !completer.isCompleted) {
@@ -1309,8 +1296,7 @@ class RedirectLoopError extends Error {
     return 'Routemaster is stuck in an endless redirect loop:\n\n' +
         redirects
             .take(redirects.length - 1)
-            .mapIndexed((i, path1) =>
-                "  * '$path1' redirected to '${redirects[i + 1]}'")
+            .mapIndexed((i, path1) => "  * '$path1' redirected to '${redirects[i + 1]}'")
             .join('\n') +
         '\n\nThis is an error in your routing map.';
   }
@@ -1455,8 +1441,7 @@ class PageStackNavigatorState extends State<PageStackNavigator> {
 
   void _updateNavigator() {
     final pages = widget.stack.createPages();
-    final filteredPages =
-        widget.builder == null ? pages : widget.builder!(pages).toList();
+    final filteredPages = widget.builder == null ? pages : widget.builder!(pages).toList();
 
     _widget = _StackNavigator(
       key: widget.navigatorKey,
